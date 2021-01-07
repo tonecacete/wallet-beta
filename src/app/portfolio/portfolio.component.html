@@ -1,0 +1,62 @@
+<div class="container">
+  <br>
+  <h2>Tabela de crypto</h2>
+  <table class="table table-inverse|reflow|striped|bordered|hover|sm">
+    <thead>
+      <tr>
+        <th>Moeda</th>
+        <th>Quantidade</th>
+        <th>Investimento</th>
+        <th>Taxas</th>
+        <th>Investimento Real</th>
+        <th>Preço</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="button" class="btn btn-primary" (click)="addCoins()">Add Coin +</button>
+</div>
+<div *ngIf="addCoin" class="container">
+  <br>
+  <div class="row">
+    <div class="col-auto">
+      <label for="moeda">Moeda</label>
+      <input type="text" class="form-control" placeholder="">
+    </div>
+    <div class="col-auto">
+      <label for="moeda">Quantidade</label>
+      <input type="text" class="form-control" placeholder="">
+    </div>
+    <div class="col-auto">
+      <label for="moeda">Investimento</label>
+      <input type="text" class="form-control" placeholder="">
+    </div>
+    <div class="col-auto">
+      <label for="moeda">Taxas</label>
+      <input type="text" class="form-control" placeholder="">
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-auto">
+      <label for="moeda">Investimento Real</label>
+      <br>
+      <span>0</span>
+    </div>
+    <div class="col-auto">
+      <label for="moeda">Preço</label>
+      <br>
+      <span>0</span>
+    </div>
+  </div>
+  <br>
+  <button type="button" class="btn btn-primary">Coise</button>
+</div>
