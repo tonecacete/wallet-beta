@@ -1,28 +1,35 @@
 <div class="container">
-  <br>
-  <h2>Tabela de crypto</h2>
-  <table class="table table-inverse|reflow|striped|bordered|hover|sm">
-    <thead>
-      <tr>
-        <th>Moeda</th>
-        <th>Quantidade</th>
-        <th>Investimento</th>
-        <th>Taxas</th>
-        <th>Investimento Real</th>
-        <th>Preço</th>
-        <th>Data</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-    </tbody>
-  </table>
-  <button type="button" class="btn btn-primary" (click)="addCoins()">Add Coin +</button>
+  <app-chart></app-chart>
+  <hr>
+  <div class="card">
+    <div class="card-header">
+      <h3>Tabela de crypto</h3>
+    </div>
+    <div class="card-body">
+      <table class="table table-inverse|reflow|striped|bordered|hover|sm">
+        <thead>
+          <tr>
+            <th>Moeda</th>
+            <th>Quantidade</th>
+            <th>Investimento</th>
+            <th>Taxas</th>
+            <th>Investimento Real</th>
+            <th>Preço</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-primary" (click)="addCoins()">Add Coin +</button>
+    </div>
+  </div>
 </div>
 <div *ngIf="addCoin" class="container">
   <br>
