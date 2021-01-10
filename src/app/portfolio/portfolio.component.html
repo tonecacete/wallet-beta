@@ -1,7 +1,7 @@
 <div class="container">
-  <app-chart></app-chart>
+  <app-chart *ngIf="totalCoinsList.length" [totalCoinsList]="totalCoinsList"></app-chart>
   <hr>
-  <div class="card">
+  <div class="card" id="cryptoTableCard">
     <div class="card-header">
       <h3>Tabela de crypto</h3>
     </div>
@@ -16,54 +16,137 @@
             <th>Investimento Real</th>
             <th>Preço</th>
             <th>Data</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+          <tr *ngFor="let purchase of purchases;let i = index">
+            <td>{{purchase.moeda}}</td>
+            <td>{{purchase.quantidade}}</td>
+            <td>{{purchase.investimento}}</td>
+            <td>{{purchase.taxas}}</td>
+            <td>{{purchase.investimentoReal}}</td>
+            <td>{{purchase.preco | number:'1.2-4'}} €</td>
+            <td>{{purchase.coinDate}}</td>
+            <td>
+              <button type="button" class="close" aria-label="Close" id="deleteRow" (click)="deleteTableItem(purchase.id)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
       <button type="button" class="btn btn-primary" (click)="addCoins()">Add Coin +</button>
     </div>
-  </div>
-</div>
-<div *ngIf="addCoin" class="container">
-  <br>
-  <div class="row">
-    <div class="col-auto">
-      <label for="moeda">Moeda</label>
-      <input type="text" class="form-control" placeholder="">
-    </div>
-    <div class="col-auto">
-      <label for="moeda">Quantidade</label>
-      <input type="text" class="form-control" placeholder="">
-    </div>
-    <div class="col-auto">
-      <label for="moeda">Investimento</label>
-      <input type="text" class="form-control" placeholder="">
-    </div>
-    <div class="col-auto">
-      <label for="moeda">Taxas</label>
-      <input type="text" class="form-control" placeholder="">
-    </div>
-  </div>
-  <br>
-  <div class="row">
-    <div class="col-auto">
-      <label for="moeda">Investimento Real</label>
+    <div *ngIf="addCoin && !coinInserted && !coinCanceled" class="container">
+      <div class="row">
+        <div class="col-auto">
+          <label for="moeda">Moeda</label>
+          <input type="text" class="form-control"  [(ngModel)]="moeda" (input)="coinUpperCase($event)" >
+        </div>
+        <div class="col-auto">
+          <label for="quantidade">Quantidade</label>
+          <input type="number" class="form-control" id="quantidade" [(ngModel)]="quantidade" (input)="calcInvestAndPrice($event)" [disabled]="moeda === '' ">
+        </div>
+        <div class="col-auto">
+          <label for="investimento" id="investimentoLabel">Investimento (€)</label>
+          <input type="number" class="form-control" id="investimento" [(ngModel)]="investimento" (input)="calcInvestAndPrice($event)" [disabled]="moeda === '' || quantidade === null ">
+        </div>
+        <div class="col-auto">
+          <label for="taxas" id="taxasLabel">Taxas (€)</label>
+          <input type="text" class="form-control" id="taxas" [(ngModel)]="taxas" (input)="calcInvestAndPrice($event)" [disabled]="moeda === '' || quantidade === null || investimento == null">
+        </div>
+      </div>
+      <!-- <br> -->
+      <div class="row" id="coinDate">
+        <div class="col-auto">
+          <label for="coinDate">Data</label>
+          <input type="date" class="form-control" placeholder="" [(ngModel)]="coinDate">
+        </div>
+      </div>
       <br>
-      <span>0</span>
-    </div>
-    <div class="col-auto">
-      <label for="moeda">Preço</label>
+      <div class="row">
+        <div class="col-auto">
+          <label for="investimentoReal">Investimento Real</label>
+          <br>
+          <span>{{investimentoReal}} €</span>
+        </div>
+        <div class="col-auto">
+          <label for="preco" id="preco">Preço</label>
+          <br>
+          <span>{{preco | number:'1.2-4'}} €</span>
+        </div>
+      </div>
       <br>
-      <span>0</span>
+      <button type="button" class="btn btn-primary" (click)="insertCoin()" [disabled]="moeda === '' || quantidade === '' || investimento === '' || taxas === ''">
+        Adicionar
+      </button>
+      <button type="button" class="btn btn-secondary" id="clear" (click)="clearFields()" [disabled]="moeda === '' && quantidade === null && investimento === null && taxas === 0">
+        Limpar
+      </button>
+      <button type="button" class="btn btn-danger" id="clear" (click)="cancelCoin()">
+        Cancelar
+      </button>
     </div>
   </div>
   <br>
-  <button type="button" class="btn btn-primary">Coise</button>
+  <div class="card" id="cryptoTableCard">
+    <div class="card-header">
+      <h3>Balanço de investimento</h3>
+    </div>
+    <div class="card-body">
+      <table class="table table-inverse|reflow|striped|bordered|hover|sm">
+        <thead>
+          <tr>
+            <th>Moedas</th>
+            <th>Quantidade</th>
+            <th>Investimento</th>
+            <th>Investimento Real</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let coin of totalCoinsList;let i = index">
+            <td>{{coin.moeda}}</td>
+            <td>{{coin.quantidade}}</td>
+            <td>{{coin.investimento}}</td>
+            <td>{{coin.investimentoReal}}</td>
+            <td>
+              <button type="button" class="close" aria-label="Close" id="deleteRow" (click)="deleteTableItem(purchase.id)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- <div class="row">
+        <div class="col-xs-1-12">
+
+        </div>
+        <div class="col-auto">
+          <label for="moeda">Moedas</label>
+          <br>
+          <span>XRP</span>
+        </div>
+        <div class="col-auto">
+          <label for="quantidade">Quantidade</label>
+          <br>
+          <span>123</span>
+        </div>
+        <div class="col-auto">
+          <label for="investimento">Investimento</label>
+          <br>
+          <span>1 €</span>
+        </div>
+        <div class="col-auto">
+          <label for="investimentoReal">Investimento Real</label>
+          <br>
+          <span>1 €</span>
+        </div>
+      </div> -->
+    </div>
+  </div>
+  <br>
+  <button type="button" class="btn btn-success" id="save">Guardar</button>
+  <button type="button" class="btn btn-danger" id="discard">Descartar</button>
 </div>

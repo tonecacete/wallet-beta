@@ -1,0 +1,36 @@
+#cryptoTableCard {
+  padding-bottom: 10px;
+}
+
+#discard {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+#clear {
+  margin-left: 10px;
+}
+
+#save {
+  margin-bottom: 10px;
+}
+
+#deleteRow {
+  color: red;
+}
+
+/* #investimentoLabel, #taxasLabel, #coinDate {
+  margin-top: 5px;
+} */
+
+#coinDate {
+  margin-top: 5px;
+}
+
+i {
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+}
