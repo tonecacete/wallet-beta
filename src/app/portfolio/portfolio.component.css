@@ -15,8 +15,16 @@
   margin-bottom: 10px;
 }
 
+#details {
+  margin-left: 10px;
+}
+
 #deleteRow {
   color: red;
+}
+
+#closeDetails {
+  float: right;
 }
 
 /* #investimentoLabel, #taxasLabel, #coinDate {

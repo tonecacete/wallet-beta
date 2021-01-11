@@ -1,12 +1,20 @@
 <div class="container">
-  <app-chart *ngIf="totalCoinsList.length" [totalCoinsList]="totalCoinsList"></app-chart>
+  <div class="row">
+    <h2>Portfólio</h2>
+  </div>
+  <div *ngIf="this.purchases.length" class="card">
+    <div class="card-body">
+      <app-chart [totalCoinsList]="totalCoinsList"></app-chart>
+    </div>
+  </div>
   <hr>
+  <!-- Detalhes de compras -->
   <div class="card" id="cryptoTableCard">
-    <div class="card-header">
-      <h3>Tabela de crypto</h3>
+    <div *ngIf="this.purchases.length" class="card-header">
+      <h3>Detalhes de compras</h3>
     </div>
     <div class="card-body">
-      <table class="table table-inverse|reflow|striped|bordered|hover|sm">
+      <table *ngIf="this.purchases.length" class="table table-inverse|reflow|striped|bordered|hover|sm">
         <thead>
           <tr>
             <th>Moeda</th>
@@ -23,9 +31,9 @@
           <tr *ngFor="let purchase of purchases;let i = index">
             <td>{{purchase.moeda}}</td>
             <td>{{purchase.quantidade}}</td>
-            <td>{{purchase.investimento}}</td>
-            <td>{{purchase.taxas}}</td>
-            <td>{{purchase.investimentoReal}}</td>
+            <td>{{purchase.investimento | number:'1.2-4'}} €</td>
+            <td>{{purchase.taxas | number:'1.2-4'}} €</td>
+            <td>{{purchase.investimentoReal | number:'1.2-4'}} €</td>
             <td>{{purchase.preco | number:'1.2-4'}} €</td>
             <td>{{purchase.coinDate}}</td>
             <td>
@@ -37,12 +45,13 @@
         </tbody>
       </table>
       <button type="button" class="btn btn-primary" (click)="addCoins()">Add Coin +</button>
+      <button *ngIf="this.totalCoinsList.length" type="button" class="btn btn-primary" (click)="seeBalanceInvest()" id="details">Ver detalhes</button>
     </div>
-    <div *ngIf="addCoin && !coinInserted && !coinCanceled" class="container">
+    <div [hidden]="!addCoin" class="container">
       <div class="row">
         <div class="col-auto">
           <label for="moeda">Moeda</label>
-          <input type="text" class="form-control"  [(ngModel)]="moeda" (input)="coinUpperCase($event)" >
+          <input type="text" class="form-control" id="moedaInput" [(ngModel)]="moeda" (input)="coinUpperCase($event)" #moedaInput>
         </div>
         <div class="col-auto">
           <label for="quantidade">Quantidade</label>
@@ -54,7 +63,7 @@
         </div>
         <div class="col-auto">
           <label for="taxas" id="taxasLabel">Taxas (€)</label>
-          <input type="text" class="form-control" id="taxas" [(ngModel)]="taxas" (input)="calcInvestAndPrice($event)" [disabled]="moeda === '' || quantidade === null || investimento == null">
+          <input type="number" class="form-control" id="taxas" [(ngModel)]="taxas" (input)="calcInvestAndPrice($event)" [disabled]="moeda === '' || quantidade === null || investimento == null">
         </div>
       </div>
       <!-- <br> -->
@@ -69,7 +78,7 @@
         <div class="col-auto">
           <label for="investimentoReal">Investimento Real</label>
           <br>
-          <span>{{investimentoReal}} €</span>
+          <span>{{investimentoReal | number:'1.2-4'}} €</span>
         </div>
         <div class="col-auto">
           <label for="preco" id="preco">Preço</label>
@@ -78,7 +87,7 @@
         </div>
       </div>
       <br>
-      <button type="button" class="btn btn-primary" (click)="insertCoin()" [disabled]="moeda === '' || quantidade === '' || investimento === '' || taxas === ''">
+      <button type="button" class="btn btn-success" (click)="insertCoin()" [disabled]="moeda === '' || quantidade === '' || investimento === '' || taxas === ''">
         Adicionar
       </button>
       <button type="button" class="btn btn-secondary" id="clear" (click)="clearFields()" [disabled]="moeda === '' && quantidade === null && investimento === null && taxas === 0">
@@ -90,9 +99,10 @@
     </div>
   </div>
   <br>
-  <div class="card" id="cryptoTableCard">
+  <!-- Balanço e investimento -->
+  <div [hidden]="!seeDetails" *ngIf="this.totalCoinsList.length" class="card" id="cryptoTableCard">
     <div class="card-header">
-      <h3>Balanço de investimento</h3>
+      <h3>Quantidade e investimento</h3>
     </div>
     <div class="card-body">
       <table class="table table-inverse|reflow|striped|bordered|hover|sm">
@@ -101,52 +111,68 @@
             <th>Moedas</th>
             <th>Quantidade</th>
             <th>Investimento</th>
+            <th>Taxas</th>
             <th>Investimento Real</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let coin of totalCoinsList;let i = index">
             <td>{{coin.moeda}}</td>
-            <td>{{coin.quantidade}}</td>
-            <td>{{coin.investimento}}</td>
-            <td>{{coin.investimentoReal}}</td>
-            <td>
-              <button type="button" class="close" aria-label="Close" id="deleteRow" (click)="deleteTableItem(purchase.id)">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </td>
-          </tr>
+            <td>{{coin.quantidade | number:'1.2-4'}}</td>
+            <td>{{coin.investimento | number:'1.2-4'}} €</td>
+            <td>{{coin.taxas | number:'1.2-4'}} €</td>
+            <td>{{coin.investimentoReal | number:'1.2-4'}} €</td>
         </tbody>
       </table>
-      <!-- <div class="row">
-        <div class="col-xs-1-12">
+      <br>
+      <hr>
+      <h3>Totais</h3>
+      <hr>
+      <div class="col-sm-6">
+        <div class="row">
+          <label for="preco" id="preco">Quantidade de moedas : </label>
+          <br>
+          <span>{{totals[0].quantidadeTotal | number:'1.2-4'}}</span>
+        </div>
+        <div class="row">
+          <label for="preco" id="preco">Investimento : </label>
+          <br>
+          <span>{{totals[0].investimentoTotal | number:'1.2-4'}} €</span>
+        </div>
+        <div class="row">
+          <label for="preco" id="preco">Taxas : </label>
+          <br>
+          <span>{{totals[0].taxasTotal | number:'1.2-4'}} €</span>
+        </div>
+        <div class="row">
+          <label for="preco" id="preco">Investimento Real : </label>
+          <br>
+          <span>{{totals[0].investimentoReal | number:'1.2-4'}} €</span>
+        </div>
 
-        </div>
-        <div class="col-auto">
-          <label for="moeda">Moedas</label>
-          <br>
-          <span>XRP</span>
-        </div>
-        <div class="col-auto">
-          <label for="quantidade">Quantidade</label>
-          <br>
-          <span>123</span>
-        </div>
-        <div class="col-auto">
-          <label for="investimento">Investimento</label>
-          <br>
-          <span>1 €</span>
-        </div>
-        <div class="col-auto">
-          <label for="investimentoReal">Investimento Real</label>
-          <br>
-          <span>1 €</span>
-        </div>
-      </div> -->
+        <!-- <table class="table table-inverse|reflow|striped|bordered|hover|sm">
+        	<thead>
+        	  <tr>
+        		<th>Quantidade</th>
+        		<th>Investimento</th>
+        		<th>Taxas</th>
+        		<th>Investimento Real</th>
+        	  </tr>
+        	</thead>
+        	<tbody>
+        	  <tr *ngFor="let coin of totals;let i = index">
+        		<td>{{coin.quantidadeTotal}}</td>
+        		<td>{{coin.investimentoTotal}}</td>
+        		<td>{{coin.taxasTotal}}</td>
+        		<td>{{coin.investimentoRealTotal}}</td>
+        	</tbody>
+        </table> -->
+
+      </div>
+      <button type="button" class="btn btn-secondary" id="closeDetails" (click)="closeDetails()">Fechar</button>
     </div>
   </div>
   <br>
-  <button type="button" class="btn btn-success" id="save">Guardar</button>
-  <button type="button" class="btn btn-danger" id="discard">Descartar</button>
+  <button type="button" class="btn btn-success" id="save" [disabled]="!this.purchases.length">Guardar</button>
+  <button type="button" class="btn btn-danger" id="discard" [disabled]="!this.purchases.length">Descartar</button>
 </div>
